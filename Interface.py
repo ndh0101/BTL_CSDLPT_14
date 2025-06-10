@@ -10,6 +10,20 @@ INPUT_FILE_PATH = 'ratings.dat'
 def getopenconnection(user='postgres',password='1234',dbname='dds_assgn1'): #Thay đổi user, password nếu cần thiết
     return psycopg2.connect("dbname='"+dbname+"' user='"+user+"' host='localhost' password='"+password+"'")
 
+def create_db(dbname='dds_assgn1'):
+    con = psycopg2.connect(dbname='postgres', user='postgres',
+                           password='1234', host='localhost')
+    con.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = con.cursor()
+    cur.execute(
+        "SELECT COUNT(*) FROM pg_catalog.pg_database WHERE datname=%s",
+        (dbname,)
+    )
+    if cur.fetchone()[0] == 0:
+        cur.execute(f"CREATE DATABASE {dbname}")
+    cur.close()
+    con.close()
+
 # Lưu dữ liệu vào bảng ratings
 def loadratings(ratingstablename,ratingsfilepath,openconnection):
     current=openconnection.cursor()
